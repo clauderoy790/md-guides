@@ -9,7 +9,7 @@
 1. [Quick Start](#quick-start)
 2. [Philosophy](#philosophy)
 3. [Document Structure](#document-structure)
-4. [Project Setup (CLAUDE.md)](#project-setup-claudemd)
+4. [Project Setup (CLAUDE.md / GEMINI.md)](#project-setup-claudemd--geminimd)
 5. [Writing the Main Plan](#writing-the-main-plan)
 6. [Writing Implementation Phases](#writing-implementation-phases)
 7. [Self-Contained Phase Prompts](#self-contained-phase-prompts)
@@ -29,14 +29,14 @@ Once set up, implementing a phase is as simple as:
 You: "implement phase 3"
 ```
 
-The agent reads your project's `CLAUDE.md`, finds your plans, and executes the phase with full context.
+The agent reads your project's `CLAUDE.md` or `GEMINI.md`, finds your plans, and executes the phase with full context.
 
 **Setup required:**
-1. Create `CLAUDE.md` in project root (points to plans)
+1. Create `CLAUDE.md` and `GEMINI.md` in project root (same content, points to plans)
 2. Create `plans/` directory with main plan + implementation doc
 3. Each phase in implementation doc is self-contained
 
-See [Project Setup](#project-setup-claudemd) for details.
+See [Project Setup](#project-setup-claudemd--geminimd) for details.
 
 ---
 
@@ -102,11 +102,30 @@ Detailed phases containing:
 
 ---
 
-## Project Setup (CLAUDE.md)
+## Project Setup (CLAUDE.md / GEMINI.md)
 
 ### The Entry Point
 
-Create a `CLAUDE.md` file in your project root. This is the **single source of truth** that tells any AI agent how to work on your project.
+Create agent instruction files in your project root. These tell AI agents how to work on your project.
+
+```
+project-root/
+├── CLAUDE.md      # Instructions for Claude agents
+├── GEMINI.md      # Instructions for Gemini agents (same content)
+└── plans/
+    ├── 1_project.md
+    └── 1_project-implementation.md
+```
+
+**Why separate files?**
+- Claude reads `CLAUDE.md` automatically
+- Gemini reads `GEMINI.md` automatically
+- Same content in both, just different filenames for each AI's convention
+
+**Tip:** Keep them identical. Edit one, copy to the other. Or use a symlink:
+```bash
+ln -s CLAUDE.md GEMINI.md
+```
 
 ```markdown
 # Project Name
@@ -148,23 +167,24 @@ When asked to "implement phase N":
 [Any coding conventions, patterns, or gotchas specific to this project]
 ```
 
-### Why CLAUDE.md?
+### Why These Files?
 
 1. **Single entry point** - Agent reads this first, knows where everything is
 2. **Status tracking** - See which phases are done at a glance
 3. **Onboarding** - New agents (or humans) understand the project immediately
 4. **Convention over configuration** - Standardized across all your projects
+5. **Multi-agent support** - Claude reads CLAUDE.md, Gemini reads GEMINI.md
 
 ### Workflow
 
-With `CLAUDE.md` set up, your workflow becomes:
+With both files set up, your workflow becomes:
 
 ```
-# Start a new agent/conversation
+# Start a new Claude or Gemini agent
 You: "implement phase 3"
 
 # Agent automatically:
-# 1. Reads CLAUDE.md
+# 1. Reads CLAUDE.md (or GEMINI.md)
 # 2. Finds plans/1_project-name-implementation.md
 # 3. Locates Phase 3 section
 # 4. Executes the self-contained prompt
@@ -172,6 +192,8 @@ You: "implement phase 3"
 ```
 
 No copy-pasting prompts. No explaining context. Just "implement phase N".
+
+Works with both Claude and Gemini (or any AI that reads its instruction file).
 
 ---
 
@@ -700,12 +722,12 @@ At certain milestones, start fresh:
 
 ### Workflow
 ```
-1. Create CLAUDE.md in project root (points to plans)
+1. Create CLAUDE.md + GEMINI.md in project root (same content, points to plans)
 2. Create plans/1_project.md (main plan)
 3. Create plans/1_project-implementation.md (phases)
-4. Start new agent → "implement phase 3"
-5. Agent reads CLAUDE.md → finds plans → executes phase
-6. You test → update CLAUDE.md status → next phase
+4. Start new agent (Claude or Gemini) → "implement phase 3"
+5. Agent reads its .md file → finds plans → executes phase
+6. You test → update status in both .md files → next phase
 ```
 
 ### Phase Sizing
@@ -741,7 +763,10 @@ At certain milestones, start fresh:
 
 ## Templates
 
-### CLAUDE.md Template
+### CLAUDE.md / GEMINI.md Template
+
+Create both files with identical content:
+
 ```markdown
 # [Project Name]
 
@@ -765,6 +790,11 @@ When asked to "implement phase N", read the implementation doc and execute that 
 
 ## Notes
 - [Project-specific conventions]
+```
+
+**Tip:** Use a symlink to keep them in sync:
+```bash
+ln -s CLAUDE.md GEMINI.md
 ```
 
 ### Quick Phase Template
@@ -798,7 +828,7 @@ When asked to "implement phase N", read the implementation doc and execute that 
 implement phase 3
 ```
 
-Agent reads CLAUDE.md, finds plans, executes phase.
+Agent reads its instruction file (CLAUDE.md or GEMINI.md), finds plans, executes phase.
 
 ---
 
