@@ -9,15 +9,16 @@
 1. [Installation](#installation)
 2. [Authentication](#authentication)
 3. [Repository Management](#repository-management)
-4. [Pull Requests](#pull-requests)
-5. [Issues](#issues)
-6. [GitHub Actions & CI/CD](#github-actions--cicd)
-7. [Gists](#gists)
-8. [Releases](#releases)
-9. [SSH Keys](#ssh-keys)
-10. [Aliases](#aliases)
-11. [API Access](#api-access)
-12. [Quick Reference](#quick-reference)
+4. [Collaborators](#collaborators)
+5. [Pull Requests](#pull-requests)
+6. [Issues](#issues)
+7. [GitHub Actions & CI/CD](#github-actions--cicd)
+8. [Gists](#gists)
+9. [Releases](#releases)
+10. [SSH Keys](#ssh-keys)
+11. [Aliases](#aliases)
+12. [API Access](#api-access)
+13. [Quick Reference](#quick-reference)
 
 ---
 
@@ -249,6 +250,62 @@ gh repo list --source  # non-forks only
 ```bash
 gh repo delete owner/repo --yes
 ```
+
+---
+
+## Collaborators
+
+There's no dedicated `gh` subcommand for collaborators, but you can manage them via the API.
+
+### Add a Collaborator
+
+```bash
+# Add collaborator (sends invitation by GitHub username)
+gh api -X PUT repos/owner/repo/collaborators/USERNAME
+
+# With specific permission level
+gh api -X PUT repos/owner/repo/collaborators/USERNAME -f permission=push
+```
+
+#### Permission Levels
+
+| Permission | Access |
+|------------|--------|
+| `pull` | Read-only access |
+| `push` | Read and write access (default) |
+| `triage` | Manage issues and PRs without write access |
+| `maintain` | Maintainer access (manage repo without admin) |
+| `admin` | Full admin access |
+
+> **GitHub Free Limitation:** For private repos on GitHub Free, collaborators only get read/write access (`push`). Granular permissions like `pull` (read-only) on private repos require GitHub Team or Enterprise. Public repos support all permission levels.
+
+### List Collaborators
+
+```bash
+# List all collaborators
+gh api repos/owner/repo/collaborators
+
+# With their permission level
+gh api repos/owner/repo/collaborators --jq '.[] | {login: .login, permission: .role_name}'
+```
+
+### Check Specific User's Permission
+
+```bash
+gh api repos/owner/repo/collaborators/USERNAME/permission
+```
+
+### Remove a Collaborator
+
+```bash
+gh api -X DELETE repos/owner/repo/collaborators/USERNAME
+```
+
+### Notes
+
+- Collaborators are added by **GitHub username**, not email
+- Adding a collaborator sends them an invitation they must accept
+- To invite by email (for users without GitHub accounts), use the web interface
 
 ---
 
