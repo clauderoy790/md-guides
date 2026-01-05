@@ -7,17 +7,18 @@
 ## Table of Contents
 
 1. [Quick Start](#quick-start)
-2. [Philosophy](#philosophy)
-3. [Document Structure](#document-structure)
-4. [Project Setup (CLAUDE.md / GEMINI.md)](#project-setup-claudemd--geminimd)
-5. [Writing the Main Plan](#writing-the-main-plan)
-6. [Writing Implementation Phases](#writing-implementation-phases)
-7. [Self-Contained Phase Prompts](#self-contained-phase-prompts)
-8. [Phase Design Principles](#phase-design-principles)
-9. [Parallel Execution](#parallel-execution)
-10. [Testing Between Phases](#testing-between-phases)
-11. [Context Management](#context-management)
-12. [Example Workflow](#example-workflow)
+2. [Claude Code Integration](#claude-code-integration)
+3. [Philosophy](#philosophy)
+4. [Document Structure](#document-structure)
+5. [Project Setup (CLAUDE.md / GEMINI.md)](#project-setup-claudemd--geminimd)
+6. [Writing the Main Plan](#writing-the-main-plan)
+7. [Writing Implementation Phases](#writing-implementation-phases)
+8. [Self-Contained Phase Prompts](#self-contained-phase-prompts)
+9. [Phase Design Principles](#phase-design-principles)
+10. [Parallel Execution](#parallel-execution)
+11. [Testing Between Phases](#testing-between-phases)
+12. [Context Management](#context-management)
+13. [Example Workflow](#example-workflow)
 
 ---
 
@@ -25,6 +26,11 @@
 
 Once set up, implementing a phase is as simple as:
 
+```
+You: /implement 3
+```
+
+Or the classic way:
 ```
 You: "implement phase 3"
 ```
@@ -37,6 +43,77 @@ The agent reads your project's `CLAUDE.md` or `GEMINI.md`, finds your plans, and
 3. Each phase in implementation doc is self-contained
 
 See [Project Setup](#project-setup-claudemd--geminimd) for details.
+
+---
+
+## Claude Code Integration
+
+If using Claude Code, you have access to custom commands, agents, and skills that enhance the phased workflow.
+
+### Quick Commands
+
+| Command | Description |
+|---------|-------------|
+| `/implement N` | Implement phase N directly |
+| `/next` | Find and show the next uncompleted phase |
+| `/phase-status` | Show current progress overview |
+
+### Specialized Agents
+
+| Agent | When to Use |
+|-------|-------------|
+| `phase-reviewer` | After completing a phase - reviews work for quality |
+| `test-guide` | After implementation - walks through manual testing |
+
+**Usage:**
+```
+"Use the phase-reviewer agent to check my work"
+"Have the test-guide agent help me test this phase"
+```
+
+### Built-in Subagents
+
+| Subagent | When to Use |
+|----------|-------------|
+| **Explore** | Research codebase before planning phases |
+| **Plan** | Design new phases or refine existing ones |
+
+**Usage:**
+```
+"Use the explore subagent to map out the auth system"
+"Use the plan subagent to design Phase 7 for notifications"
+```
+
+### Enhanced Workflow
+
+| Step | Command/Action |
+|------|----------------|
+| Check progress | `/phase-status` |
+| Start next phase | `/next` or `/implement N` |
+| After implementing | "Use phase-reviewer agent" |
+| Before manual testing | "Use test-guide agent" |
+| Research codebase | "Use explore subagent to..." |
+| Plan new features | "Use plan subagent to..." |
+
+### Installation
+
+These tools are installed at user level (`~/.claude/`) and work across all projects:
+
+```
+~/.claude/
+├── commands/
+│   ├── implement.md
+│   ├── next.md
+│   └── phase-status.md
+├── agents/
+│   ├── phase-reviewer.md
+│   └── test-guide.md
+└── skills/
+    └── phased-development/
+        └── SKILL.md
+```
+
+No per-project setup needed - they're available everywhere.
 
 ---
 
