@@ -245,6 +245,25 @@ gh repo list --language go --limit 20
 gh repo list --source  # non-forks only
 ```
 
+### Rename a Repository
+
+```bash
+# Rename current repository
+gh repo rename new-name
+
+# Rename specific repository
+gh repo rename new-name --repo owner/old-name
+
+# Skip confirmation prompt
+gh repo rename new-name --yes
+```
+
+**Note:** Renaming updates the remote URL. GitHub automatically redirects the old URL to the new one, but you should update your local remote:
+
+```bash
+git remote set-url origin git@github.com:owner/new-name.git
+```
+
 ### Delete a Repository
 
 ```bash
