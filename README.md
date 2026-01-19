@@ -10,6 +10,7 @@ Guides are organized by topic:
 md-guides/
 ├── git/          # Git commands and workflows
 ├── ai/           # Guides on working with AI
+├── javascript/   # JavaScript and React development
 ├── config/       # System configuration and dotfiles
 └── ...           # More topics as needed
 ```
@@ -27,6 +28,9 @@ md-guides/
 - [Claude Code Custom Agents](ai/CLAUDE-CODE-CUSTOM-AGENTS.md) - Creating custom agents in Claude Code
 - [Claude Code Custom Commands](ai/CLAUDE-CODE-CUSTOM-COMMANDS.md) - Defining custom slash commands
 - [AI Phased Development Guide](ai/AI-PHASED-DEVELOPMENT-GUIDE.md) - Breaking projects into phases with AI
+
+### JavaScript
+- [Event Handling: preventDefault vs stopPropagation](javascript/event-handling-prevent-default-vs-stop-propagation.md) - Understanding event control methods in JavaScript/React
 
 ### Config
 - [Dotfiles Bare Repo](config/DOTFILES-BARE-REPO.md) - Manage dotfiles with a bare git repository
