@@ -8,12 +8,13 @@ Guides are organized by topic:
 
 ```
 md-guides/
-├── git/          # Git commands and workflows
-├── ai/           # Guides on working with AI
-├── javascript/   # JavaScript and React development
-├── vscode/       # VS Code editor shortcuts and configuration
-├── config/       # System configuration and dotfiles
-└── ...           # More topics as needed
+├── git/                    # Git commands and workflows
+├── ai/                     # Guides on working with AI
+│   └── best-practices/     # Tech-specific rules for AI agents
+├── javascript/             # JavaScript and React development
+├── vscode/                 # VS Code editor shortcuts and configuration
+├── config/                 # System configuration and dotfiles
+└── ...                     # More topics as needed
 ```
 
 ## Guides
@@ -29,6 +30,10 @@ md-guides/
 - [Claude Code Custom Agents](ai/CLAUDE-CODE-CUSTOM-AGENTS.md) - Creating custom agents in Claude Code
 - [Claude Code Custom Commands](ai/CLAUDE-CODE-CUSTOM-COMMANDS.md) - Defining custom slash commands
 - [AI Phased Development Guide](ai/AI-PHASED-DEVELOPMENT-GUIDE.md) - Breaking projects into phases with AI
+
+### AI Best Practices (For AI Agents)
+Guides that AI agents should follow when working on projects with specific tech stacks:
+- [Unity](ai/best-practices/unity.md) - Rules for AI working on Unity projects (ScriptableObjects, meta files, etc.)
 
 ### JavaScript
 - [Event Handling: preventDefault vs stopPropagation](javascript/event-handling-prevent-default-vs-stop-propagation.md) - Understanding event control methods in JavaScript/React
