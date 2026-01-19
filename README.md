@@ -11,6 +11,7 @@ md-guides/
 ├── git/          # Git commands and workflows
 ├── ai/           # Guides on working with AI
 ├── javascript/   # JavaScript and React development
+├── vscode/       # VS Code editor shortcuts and configuration
 ├── config/       # System configuration and dotfiles
 └── ...           # More topics as needed
 ```
@@ -31,6 +32,9 @@ md-guides/
 
 ### JavaScript
 - [Event Handling: preventDefault vs stopPropagation](javascript/event-handling-prevent-default-vs-stop-propagation.md) - Understanding event control methods in JavaScript/React
+
+### VS Code
+- [Keyboard Shortcuts](vscode/SHORTCUTS.md) - Essential VS Code keyboard shortcuts cheatsheet
 
 ### Config
 - [Dotfiles Bare Repo](config/DOTFILES-BARE-REPO.md) - Manage dotfiles with a bare git repository
