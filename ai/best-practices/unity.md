@@ -135,7 +135,18 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         if (Instance == null)
         {
             Instance = this as T;
-            DontDestroyOnLoad(gameObject);
+
+            // If we have a parent, mark the root parent instead
+            // This allows organizing singletons under a "Managers" GameObject
+            Transform root = transform.root;
+            if (root != transform)
+            {
+                DontDestroyOnLoad(root.gameObject);
+            }
+            else
+            {
+                DontDestroyOnLoad(gameObject);
+            }
         }
         else
         {
@@ -161,6 +172,17 @@ public class GameManager : Singleton<GameManager>
         // Your initialization here
     }
 }
+```
+
+**Hierarchy Example:**
+```
+Scene Hierarchy:
+├── Main Camera
+├── Directional Light
+└── Managers (will be marked with DontDestroyOnLoad automatically)
+    ├── GameManager
+    ├── AudioManager
+    └── SaveManager
 ```
 
 ### Why?
