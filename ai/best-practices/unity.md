@@ -203,7 +203,9 @@ Scene Hierarchy:
 
 ## Input System
 
-### Never Do This
+We should always be using the new Unity input system (com.unity.inputsystem)
+
+### Never Do This (old input system)
 ```csharp
 // Old Input Manager (deprecated)
 if (Input.GetKeyDown(KeyCode.Space))
@@ -217,9 +219,12 @@ if (Input.GetButtonDown("Fire1"))
 }
 ```
 
-### Always Do This
+### Always Do This (new input system)
+
+## For simple test scripts
 ```csharp
 using UnityEngine.InputSystem;
+
 
 // New Input System - Simple approach for test/debug scripts
 private void Update()
@@ -238,7 +243,7 @@ private void Update()
 }
 ```
 
-### For Production Code
+## For Production Code
 Use Input Actions for rebindable controls:
 
 ```csharp
