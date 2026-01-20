@@ -201,6 +201,105 @@ Scene Hierarchy:
 
 ---
 
+## Input System
+
+### Never Do This
+```csharp
+// Old Input Manager (deprecated)
+if (Input.GetKeyDown(KeyCode.Space))
+{
+    Jump();
+}
+
+if (Input.GetButtonDown("Fire1"))
+{
+    Shoot();
+}
+```
+
+### Always Do This
+```csharp
+using UnityEngine.InputSystem;
+
+// New Input System - Simple approach for test/debug scripts
+private void Update()
+{
+    if (Keyboard.current == null) return; // Null check for safety
+
+    if (Keyboard.current.spaceKey.wasPressedThisFrame)
+    {
+        Jump();
+    }
+
+    if (Mouse.current.leftButton.wasPressedThisFrame)
+    {
+        Shoot();
+    }
+}
+```
+
+### For Production Code
+Use Input Actions for rebindable controls:
+
+```csharp
+using UnityEngine.InputSystem;
+
+public class PlayerController : MonoBehaviour
+{
+    [SerializeField] private InputActionAsset inputActions;
+    private InputAction moveAction;
+    private InputAction jumpAction;
+
+    private void Awake()
+    {
+        moveAction = inputActions.FindActionMap("Player").FindAction("Move");
+        jumpAction = inputActions.FindActionMap("Player").FindAction("Jump");
+    }
+
+    private void OnEnable()
+    {
+        moveAction.Enable();
+        jumpAction.Enable();
+        jumpAction.performed += OnJump;
+    }
+
+    private void OnDisable()
+    {
+        moveAction.Disable();
+        jumpAction.Disable();
+        jumpAction.performed -= OnJump;
+    }
+
+    private void Update()
+    {
+        Vector2 input = moveAction.ReadValue<Vector2>();
+        Move(input);
+    }
+
+    private void OnJump(InputAction.CallbackContext context)
+    {
+        Jump();
+    }
+}
+```
+
+### Why?
+- **New Input System is the standard** - Old Input Manager is deprecated
+- **Mobile support** - Touch and gamepad input work the same way
+- **Rebindable controls** - Players can change key bindings
+- **Multi-device** - Keyboard, mouse, touch, gamepad unified API
+
+### Quick Reference
+| Old Input Manager | New Input System |
+|------------------|------------------|
+| `Input.GetKeyDown(KeyCode.A)` | `Keyboard.current.aKey.wasPressedThisFrame` |
+| `Input.GetKey(KeyCode.A)` | `Keyboard.current.aKey.isPressed` |
+| `Input.GetMouseButtonDown(0)` | `Mouse.current.leftButton.wasPressedThisFrame` |
+| `Input.mousePosition` | `Mouse.current.position.ReadValue()` |
+| `Input.GetAxis("Horizontal")` | Use Input Actions |
+
+---
+
 ## C# Scripts
 
 ### Safe to Create
