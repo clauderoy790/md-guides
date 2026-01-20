@@ -86,6 +86,99 @@ public static void CreateData()
 
 ---
 
+## Singleton Pattern
+
+### Never Do This
+```csharp
+// Over-engineered with unnecessary complexity
+public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+{
+    private static T _instance;
+    private static object _lock = new object(); // ❌ Unnecessary - Unity is single-threaded
+    private static bool _applicationIsQuitting = false;
+
+    public static T Instance
+    {
+        get
+        {
+            if (_applicationIsQuitting) return null; // ❌ Over-engineering
+
+            lock (_lock) // ❌ Thread safety not needed
+            {
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType<T>();
+
+                    if (_instance == null)
+                    {
+                        // ❌ Auto-creation hides missing GameObjects
+                        GameObject singleton = new GameObject($"{typeof(T).Name}");
+                        _instance = singleton.AddComponent<T>();
+                    }
+                }
+                return _instance;
+            }
+        }
+    }
+}
+```
+
+### Always Do This
+```csharp
+// Simple, clean, sufficient for Unity projects
+public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+{
+    public static T Instance { get; private set; }
+
+    protected virtual void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this as T;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject); // Destroy duplicates
+        }
+    }
+
+    protected virtual void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null; // Clean up reference
+        }
+    }
+}
+
+// Usage
+public class GameManager : Singleton<GameManager>
+{
+    protected override void Awake()
+    {
+        base.Awake();
+        // Your initialization here
+    }
+}
+```
+
+### Why?
+- **Unity is single-threaded** - No need for `lock()` or thread safety
+- **Auto-creation hides problems** - Better to know if GameManager is missing from scene
+- **Simpler = fewer bugs** - 60 lines → 15 lines, same functionality
+- **OnDestroy cleanup** prevents rare edge cases with scene reloading
+
+### What's Actually Useful
+✅ **Duplicate prevention** - Destroys extras if multiple exist
+✅ **DontDestroyOnLoad** - Persists across scenes
+✅ **Instance cleanup** - Prevents dangling references
+❌ Thread-safe locking - Overkill for Unity
+❌ Auto-creation - Hides missing GameObjects
+❌ Application quit flag - Minor benefit, adds complexity
+
+---
+
 ## C# Scripts
 
 ### Safe to Create
