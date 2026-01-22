@@ -71,9 +71,9 @@ public static void CreateData()
 - Modify scene files outside of Unity
 
 ### Always Do This
-- Describe scene setup in documentation or comments
-- Create Editor scripts that build scenes programmatically if needed
-- Tell the user what to create manually in the Scene view
+- Create Editor scripts that build scene content programmatically (especially UI)
+- User runs menu commands to set up scene content, then saves the scene
+- For non-UI elements (lights, cameras), describe setup or create via Editor script
 
 ---
 
@@ -83,9 +83,87 @@ public static void CreateData()
 - Write `.prefab` files directly
 
 ### Always Do This
-- Describe prefab structure in comments/documentation
 - Create prefabs via Editor scripts using `PrefabUtility.SaveAsPrefabAsset()`
-- Or tell the user to create prefabs manually in Unity
+- Wire up SerializedField references BEFORE saving the prefab:
+```csharp
+MyComponent comp = go.AddComponent<MyComponent>();
+SerializedObject so = new SerializedObject(comp);
+so.FindProperty("myField").objectReferenceValue = someReference;
+so.ApplyModifiedPropertiesWithoutUndo();
+PrefabUtility.SaveAsPrefabAsset(go, path);
+```
+- For TMP text in prefabs, explicitly assign font (it won't auto-serialize):
+```csharp
+TMP_FontAsset font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(
+    AssetDatabase.GUIDToAssetPath(AssetDatabase.FindAssets("t:TMP_FontAsset")[0]));
+tmp.font = font;
+```
+
+---
+
+## UI System
+
+### Core Rule: Agent Creates UI Via Code
+**The agent is responsible for creating all UI programmatically via Editor scripts.** Do NOT tell the user to "create UI manually" or "set up the Canvas in Unity." Instead, write Editor scripts that:
+1. Create the full UI hierarchy (Canvas, panels, buttons, text, etc.)
+2. Create prefabs for repeating elements (cards, list items, shop items)
+3. Auto-wire all SerializedField references
+4. User only runs menu commands: `MyGame > Setup UI`
+
+### Editor Script Structure
+Create one or two scripts per UI feature:
+- `{Feature}UISetup.cs` - Creates hierarchy, adds components, creates prefabs
+- Wiring can be in same script or separate `{Feature}UIAutoWire.cs`
+
+### Critical Patterns
+
+**Button.targetGraphic** - Without this, clicks don't work:
+```csharp
+Button btn = go.AddComponent<Button>();
+btn.targetGraphic = img; // REQUIRED
+```
+
+**RectMask2D for ScrollViews** - Never use `Mask`, it breaks TMP text:
+```csharp
+// BAD: Mask uses stencil buffer, causes TMP red X
+viewport.AddComponent<Mask>();
+
+// GOOD: RectMask2D clips without stencil issues
+viewport.AddComponent<RectMask2D>();
+```
+
+**EventSystem** - Use new Input System module:
+```csharp
+eventSystem.AddComponent<InputSystemUIInputModule>(); // NOT StandaloneInputModule
+```
+
+**Hidden Objects During Auto-Wire** - `GameObject.Find()` can't find inactive objects:
+```csharp
+// Store original states, enable all, wire, restore
+List<(GameObject, bool)> states = new List<(GameObject, bool)>();
+foreach (Transform child in root.GetComponentsInChildren<Transform>(true))
+{
+    states.Add((child.gameObject, child.gameObject.activeSelf));
+    child.gameObject.SetActive(true);
+}
+// ... do wiring with GameObject.Find() ...
+foreach (var (go, wasActive) in states)
+    go.SetActive(wasActive);
+```
+
+**Overlay Panels (Pause/Shop)** - If parent starts disabled, Show/Hide must control parent:
+```csharp
+public void Show()
+{
+    gameObject.SetActive(true); // Enable parent first
+    panel.SetActive(true);
+}
+public void Hide()
+{
+    panel.SetActive(false);
+    gameObject.SetActive(false); // Disable parent
+}
+```
 
 ---
 
@@ -369,8 +447,9 @@ Assets/
 | `.cs` | Yes | Write directly |
 | `.asset` | No | Use Editor script + AssetDatabase |
 | `.meta` | No | Unity generates automatically |
-| `.unity` | No | Describe setup, or use Editor script |
+| `.unity` | No | Use Editor script to create content, user saves scene |
 | `.prefab` | No | Use PrefabUtility in Editor script |
+| UI hierarchy | No | Editor script creates Canvas, panels, wires references |
 | `ProjectSettings/*` | No | Document changes for user |
 
 ---
