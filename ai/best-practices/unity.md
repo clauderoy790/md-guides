@@ -4,6 +4,9 @@ Guidelines for AI agents working on Unity projects. These rules prevent common i
 
 ---
 
+# Important: Unity version used in project
+The versions that we are using is Unity 6.3 LTS. Ensure that the features that you are planning/implementing are compatible with this version. A lot of documentation on Unity is from old unity version.
+
 ## Core Principle
 
 **Unity manages its own metadata.** Never create or modify files that Unity generates automatically (`.meta` files, GUIDs, serialized references).
@@ -88,40 +91,8 @@ public static void CreateData()
 
 ## Singleton Pattern
 
-### Never Do This
-```csharp
-// Over-engineered with unnecessary complexity
-public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
-{
-    private static T _instance;
-    private static object _lock = new object(); // ❌ Unnecessary - Unity is single-threaded
-    private static bool _applicationIsQuitting = false;
-
-    public static T Instance
-    {
-        get
-        {
-            if (_applicationIsQuitting) return null; // ❌ Over-engineering
-
-            lock (_lock) // ❌ Thread safety not needed
-            {
-                if (_instance == null)
-                {
-                    _instance = FindObjectOfType<T>();
-
-                    if (_instance == null)
-                    {
-                        // ❌ Auto-creation hides missing GameObjects
-                        GameObject singleton = new GameObject($"{typeof(T).Name}");
-                        _instance = singleton.AddComponent<T>();
-                    }
-                }
-                return _instance;
-            }
-        }
-    }
-}
-```
+### Naming
+Every singleton needs to have a Manager suffix in the class/filename. For example: GameManager.cs
 
 ### Always Do This
 ```csharp
@@ -302,6 +273,47 @@ public class PlayerController : MonoBehaviour
 | `Input.GetMouseButtonDown(0)` | `Mouse.current.leftButton.wasPressedThisFrame` |
 | `Input.mousePosition` | `Mouse.current.position.ReadValue()` |
 | `Input.GetAxis("Horizontal")` | Use Input Actions |
+
+---
+
+## Finding Objects in Scene
+
+### Never Do This (deprecated)
+```csharp
+// Old API (deprecated in Unity 2023+)
+MyComponent obj = FindObjectOfType<MyComponent>();
+MyComponent obj = GameObject.FindObjectOfType<MyComponent>();
+MyComponent[] objs = FindObjectsOfType<MyComponent>();
+```
+
+### Always Do This (new API)
+```csharp
+// New API - Use FindFirstObjectByType for single objects
+MyComponent obj = FindFirstObjectByType<MyComponent>();
+
+// For finding all objects of a type
+MyComponent[] objs = FindObjectsByType<MyComponent>(FindObjectsSortMode.None);
+
+// If you need sorted results (slower, but deterministic)
+MyComponent[] objs = FindObjectsByType<MyComponent>(FindObjectsSortMode.InstanceID);
+```
+
+### Why?
+- **FindObjectOfType is deprecated** - Unity 2023+ shows compiler warnings
+- **New API is clearer** - Explicit about whether you want first or all objects
+- **Better performance** - FindFirstObjectByType can stop searching after finding one
+- **Sorting control** - FindObjectsByType lets you choose if results should be sorted
+
+### Quick Reference
+| Old API (deprecated) | New API |
+|---------------------|---------|
+| `FindObjectOfType<T>()` | `FindFirstObjectByType<T>()` |
+| `FindObjectsOfType<T>()` | `FindObjectsByType<T>(FindObjectsSortMode.None)` |
+| `GameObject.FindObjectOfType<T>()` | `FindFirstObjectByType<T>()` |
+
+### When to Use Each
+- **FindFirstObjectByType**: When you need any one instance (e.g., finding a singleton manager)
+- **FindObjectsByType**: When you need all instances (e.g., finding all enemies in scene)
 
 ---
 
