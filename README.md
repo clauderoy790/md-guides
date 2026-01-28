@@ -11,7 +11,8 @@ md-guides/
 ├── git/                    # Git commands and workflows
 ├── ai/                     # Guides on working with AI
 │   └── best-practices/     # Tech-specific rules for AI agents
-├── javascript/             # JavaScript and React development
+├── react/                  # React development patterns and pitfalls
+├── javascript/             # JavaScript development
 ├── vscode/                 # VS Code editor shortcuts and configuration
 ├── config/                 # System configuration and dotfiles
 └── ...                     # More topics as needed
@@ -34,6 +35,10 @@ md-guides/
 ### AI Best Practices (For AI Agents)
 Guides that AI agents should follow when working on projects with specific tech stacks:
 - [Unity](ai/best-practices/unity.md) - Rules for AI working on Unity projects (ScriptableObjects, meta files, etc.)
+- [Supabase](ai/best-practices/supabase.md) - Rules for AI working with Supabase (migrations, RLS, error handling)
+
+### React
+- [State Management Pitfalls](react/state-management-pitfalls.md) - Understanding useState, useCallback, dependency arrays, side effects, and common bugs
 
 ### JavaScript
 - [Event Handling: preventDefault vs stopPropagation](javascript/event-handling-prevent-default-vs-stop-propagation.md) - Understanding event control methods in JavaScript/React
