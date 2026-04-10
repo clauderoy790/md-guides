@@ -358,16 +358,16 @@ public class PlayerController : MonoBehaviour
 
 ### Never Do This (deprecated)
 ```csharp
-// Old API (deprecated in Unity 2023+)
-MyComponent obj = FindObjectOfType<MyComponent>();
-MyComponent obj = GameObject.FindObjectOfType<MyComponent>();
-MyComponent[] objs = FindObjectsOfType<MyComponent>();
+// These are ALL deprecated - do not use any of them
+MyComponent obj = FindObjectOfType<MyComponent>();           // Deprecated Unity 2023
+MyComponent obj = FindFirstObjectByType<MyComponent>();      // Deprecated Unity 6 (relies on instance ID ordering)
+MyComponent[] objs = FindObjectsOfType<MyComponent>();       // Deprecated Unity 2023
 ```
 
-### Always Do This (new API)
+### Always Do This (current API - Unity 6+)
 ```csharp
-// New API - Use FindFirstObjectByType for single objects
-MyComponent obj = FindFirstObjectByType<MyComponent>();
+// Use FindAnyObjectByType for single objects (does not rely on ordering)
+MyComponent obj = FindAnyObjectByType<MyComponent>();
 
 // For finding all objects of a type
 MyComponent[] objs = FindObjectsByType<MyComponent>(FindObjectsSortMode.None);
@@ -377,20 +377,19 @@ MyComponent[] objs = FindObjectsByType<MyComponent>(FindObjectsSortMode.Instance
 ```
 
 ### Why?
-- **FindObjectOfType is deprecated** - Unity 2023+ shows compiler warnings
-- **New API is clearer** - Explicit about whether you want first or all objects
-- **Better performance** - FindFirstObjectByType can stop searching after finding one
-- **Sorting control** - FindObjectsByType lets you choose if results should be sorted
+- **FindObjectOfType** deprecated in Unity 2023
+- **FindFirstObjectByType** deprecated in Unity 6 because it relies on instance ID ordering
+- **FindAnyObjectByType** is the current recommended API — no ordering dependency
 
 ### Quick Reference
-| Old API (deprecated) | New API |
-|---------------------|---------|
-| `FindObjectOfType<T>()` | `FindFirstObjectByType<T>()` |
+| Deprecated | Current API (Unity 6+) |
+|------------|------------------------|
+| `FindObjectOfType<T>()` | `FindAnyObjectByType<T>()` |
+| `FindFirstObjectByType<T>()` | `FindAnyObjectByType<T>()` |
 | `FindObjectsOfType<T>()` | `FindObjectsByType<T>(FindObjectsSortMode.None)` |
-| `GameObject.FindObjectOfType<T>()` | `FindFirstObjectByType<T>()` |
 
 ### When to Use Each
-- **FindFirstObjectByType**: When you need any one instance (e.g., finding a singleton manager)
+- **FindAnyObjectByType**: When you need any one instance (e.g., finding a singleton manager)
 - **FindObjectsByType**: When you need all instances (e.g., finding all enemies in scene)
 
 ---
