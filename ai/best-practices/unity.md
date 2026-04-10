@@ -454,6 +454,68 @@ Assets/
 
 ---
 
+## Editor Menu Organization
+
+### Always Organize by Phase
+Each phase should create its own submenu to keep menus organized. This makes it clear which menu items belong to which phase.
+
+### Menu Naming Convention
+```
+[GameName]/Phase [N]/[Number] - [Action]
+```
+
+Example menu structure:
+```
+MyGame/
+├── Phase 1/
+│   ├── 1 - Setup Project Folders
+│   └── 2 - Setup Core Managers
+├── Phase 2/
+│   ├── 1 - Setup Grid Config
+│   ├── 2 - Setup Player Prefab
+│   └── 3 - Setup Scene
+├── Phase 3/
+│   ├── 1 - Setup Row Data
+│   └── 2 - Setup World Generator
+```
+
+### Why Number the Items?
+- Unity sorts menu items alphabetically by default
+- Numbering ensures items appear in the correct execution order
+- Users know which step to run first
+
+### Example Implementation
+```csharp
+using UnityEngine;
+using UnityEditor;
+
+public static class Phase2Setup
+{
+    [MenuItem("MyGame/Phase 2/1 - Setup Grid Config")]
+    public static void SetupGridConfig()
+    {
+        // Create GridConfig asset...
+        Debug.Log("[Phase2] Grid config created.");
+    }
+
+    [MenuItem("MyGame/Phase 2/2 - Setup Player Prefab")]
+    public static void SetupPlayerPrefab()
+    {
+        // Create player prefab...
+        Debug.Log("[Phase2] Player prefab created.");
+    }
+
+    [MenuItem("MyGame/Phase 2/3 - Setup Scene")]
+    public static void SetupScene()
+    {
+        // Setup scene objects...
+        Debug.Log("[Phase2] Scene setup complete.");
+    }
+}
+```
+
+---
+
 ## Example Editor Script Pattern
 
 ```csharp
@@ -462,7 +524,7 @@ using UnityEditor;
 
 public static class MyGameDataSetup
 {
-    [MenuItem("MyGame/Setup All Data")]
+    [MenuItem("MyGame/Phase 1/1 - Setup All Data")]
     public static void SetupAllData()
     {
         // 1. Create assets with no dependencies first
@@ -478,7 +540,7 @@ public static class MyGameDataSetup
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log("Data setup complete!");
+        Debug.Log("[Phase1] Data setup complete!");
     }
 
     private static ItemData CreateItem(string name, int value)
